@@ -1,0 +1,6 @@
+/proc is the file system which is used by ps to get the process related details...
+
+By listing the proper directory like structure, we can easily get the details what we wanted..
+
+Through proc interface, we can communicate with kernel...
+
