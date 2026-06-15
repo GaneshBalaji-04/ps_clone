@@ -4,3 +4,22 @@ By listing the proper directory like structure, we can easily get the details wh
 
 Through proc interface, we can communicate with kernel...
 
+With /proc/<pid>/status, we can easily read and parse the content regarding the process..
+
+In stat, there are 5 states. They are 
+1. R -> Running
+2. S -> Sleeping
+3. D -> Uninterruptible sleep
+4. Z -> Zombie
+5. T -> Terminated or Stopped
+
+Now, The main difference between D and S are, D is the sleep which can't be interrupted by the signals or interrupts like SIGKILL, but S can be killed or interrupted. 
+
+Eg: scanf would be in S, just waiting for the input, nothing else, so, we can easily kill it by Ctrl + C, nothing much. For a disk reading operation, if the kernel is waiting for the disk reading to occur, the process will enter into the D state, as, killing or interrupting at middle won't be making the process enter into the safe state..
+
+The Zombie process is a process, where, the process exits, but the entry is still in the process table, as the parent still didn't call wait(), as wait() is the system call with which, the parent process knows the info that, whether the child process is successful or not. After the parent process calls wait(), the kernel provides the info about that and deletes the entry of the process in the Process table. 
+
+How can we delete the zombie process?
+1. We can make the parent process call wait(), with which, the entry disappears.
+2. The parent process can be deleted, so that, the zombie process is mapped to the init process as child, then the init calls the wait() method to delete the entries of the child process.
+
