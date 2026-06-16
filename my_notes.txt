@@ -23,3 +23,4 @@ How can we delete the zombie process?
 1. We can make the parent process call wait(), with which, the entry disappears.
 2. The parent process can be deleted, so that, the zombie process is mapped to the init process as child, then the init calls the wait() method to delete the entries of the child process.
 
+The main learning here is, ps is the tool that parses the content in the proc filesystem.
