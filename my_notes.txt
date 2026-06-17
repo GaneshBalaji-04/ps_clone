@@ -24,3 +24,23 @@ How can we delete the zombie process?
 2. The parent process can be deleted, so that, the zombie process is mapped to the init process as child, then the init calls the wait() method to delete the entries of the child process.
 
 The main learning here is, ps is the tool that parses the content in the proc filesystem.
+
+In comm file in the /proc, the name of the process is there.
+In the cmdline file, the command is there..
+
+There are two types of error codes or signals in filestream. They are 
+1. Failbit
+2. Badbit
+
+
+Failbit - Operation is failed, but the stream is usable. 
+Eg: For cin>>x, if someone enters characters, then extracting integer fails, so, failbit set. 
+Opening a nonexistent file, trying to read a line after reaching the end of the file, all these contribute to failbit. 
+
+Badbit - I/O error or corruption of the stream. Very rare, Hardware I/O failures, OS-level read errors, Loss of connection to a network backed stream.
+
+There is an another bit called eofbit, which is set at the end of the file. 
+
+Generally, ifstream does not set any exception, so, for exceptions, we need to set them manually with filestream.exceptions();
+
+Underlying difference between failbit and badbit is, the task can't be done, but the stream is fine - failbit, the stream itself is getting corrupted because of underlying errors - badbit.
