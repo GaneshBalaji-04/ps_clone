@@ -9,6 +9,16 @@ using namespace std;
 
 namespace fs = filesystem;
 
+// This is a function for opening the files in the filestream and to mark exceptions for all.
+// This is done, because, there is no inbuilt function to mark all the filestreams with exceptions.
+ifstream open_file(string &path){
+	ifstream filestream(path);
+	filestream.exceptions(
+		ifstream :: failbit | ifstream :: badbit
+	);
+	return filestream;
+}
+
 int main(){
 	string path = "/proc";
 	set<int> ordered_pids;
@@ -25,18 +35,18 @@ int main(){
 			ordered_pids.insert(stoi(temporary_path));
 		}
 	}
-	println("{:<8} Name\n", "PID");
+	println("{:<8} {:<20} {}", "PID", "NAME", "COMMAND");
 	for(auto i : ordered_pids){
-		string result_path = "/proc/" + to_string(i) + "/comm";
-		ifstream filestream(result_path);
-		filestream.exceptions(
-			ifstream :: failbit | ifstream :: badbit
-		);
-		if(!filestream) continue;
+		string name_path = "/proc/" + to_string(i) + "/comm";
+		string command_path = "/proc/" + to_string(i) + "/cmdline";
+		auto namestream = open_file(name_path);
+		auto cmd_stream = open_file(command_path);
+		if(!namestream or !cmd_stream) continue;
 		try {
-			string line;
-			getline(filestream, line);
-			println("{:<8} {}", i, line); 
+			string name, command;
+			getline(namestream, name);
+			getline(cmd_stream, command);
+			println("{:<8} {:<20} {}", i, name, command.substr(0, 50)); 
 		}
 		catch(...){
 			// The catch block has to be kept silent, according to the character of ps.
