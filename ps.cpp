@@ -4,6 +4,7 @@
 #include<set>
 #include<fstream>
 #include<print>
+#include<vector>
 
 using namespace std;
 
@@ -11,12 +12,10 @@ namespace fs = filesystem;
 
 // This is a function for opening the files in the filestream and to mark exceptions for all.
 // This is done, because, there is no inbuilt function to mark all the filestreams with exceptions.
-ifstream open_file(string &path){
-	ifstream filestream(path);
+void set_exceptions(ifstream &filestream){
 	filestream.exceptions(
-		ifstream :: failbit | ifstream :: badbit
+		ifstream :: badbit
 	);
-	return filestream;
 }
 
 int main(){
@@ -39,18 +38,29 @@ int main(){
 	for(auto i : ordered_pids){
 		string name_path = "/proc/" + to_string(i) + "/comm";
 		string command_path = "/proc/" + to_string(i) + "/cmdline";
-		auto namestream = open_file(name_path);
-		auto cmd_stream = open_file(command_path);
-		if(!namestream or !cmd_stream) continue;
+		ifstream name_stream(name_path);
+		set_exceptions(name_stream);
+		ifstream cmd_stream(command_path, ios::binary);
+		set_exceptions(cmd_stream);
+		if(!name_stream or !cmd_stream) continue;
+		
 		try {
-			string name, command;
-			getline(namestream, name);
-			getline(cmd_stream, command);
+			string name;
+			getline(name_stream, name);
+			vector<string> arguments;
+			string temp_command;
+			while(getline(cmd_stream, temp_command, '\0')){
+				arguments.push_back(temp_command);
+			}	
+			string command;
+			for(string &s: arguments){
+				command.append(s);
+				command.push_back(' ');
+			}		
 			println("{:<8} {:<20} {}", i, name, command.substr(0, 50)); 
 		}
-		catch(...){
-			// The catch block has to be kept silent, according to the character of ps.
-			// I'm defining it under the try block, as, there is a possibility that, the process may become dead...
+		catch(...) {
+    			
 		}
 	}
 } 
