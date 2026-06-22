@@ -5,6 +5,8 @@
 #include<fstream>
 #include<print>
 #include<vector>
+#include<ranges>
+#include<string_view>
 
 using namespace std;
 
@@ -34,15 +36,18 @@ int main(){
 			ordered_pids.insert(stoi(temporary_path));
 		}
 	}
-	println("{:<8} {:<20} {}", "PID", "NAME", "COMMAND");
+	println("{:<8} {:<20} {:<60} {}", "PID", "NAME", "COMMAND", "TTY");
 	for(auto i : ordered_pids){
 		string name_path = "/proc/" + to_string(i) + "/comm";
 		string command_path = "/proc/" + to_string(i) + "/cmdline";
+		string tty_path = "/proc/" + to_string(i) + "/stat";
 		ifstream name_stream(name_path);
 		set_exceptions(name_stream);
 		ifstream cmd_stream(command_path, ios::binary);
 		set_exceptions(cmd_stream);
-		if(!name_stream or !cmd_stream) continue;
+		ifstream tty_stream(tty_path);
+		set_exceptions(tty_stream);
+		if(!name_stream or !cmd_stream or !tty_stream) continue;
 		
 		try {
 			string name;
@@ -57,7 +62,19 @@ int main(){
 				command.append(s);
 				command.push_back(' ');
 			}		
-			println("{:<8} {:<20} {}", i, name, command.substr(0, 50)); 
+			string whole_stat;
+			getline(tty_stream, whole_stat);
+			auto segments = whole_stat | ranges::views::split(' ');
+			int tty_temp = 1;
+			string tty_value;
+			for(const auto &word : segments){
+				if(tty_temp == 7) break;
+				tty_value = string(word.begin(), word.end());
+				if(tty_value[0] == '(' or tty_value[tty_value.size()-1] == ')') tty_temp = 2;
+				else tty_temp++;
+			}
+			int tty = stoi(tty_value);
+			println("{:<8} {:<20} {:<60} {}", i, name, command.substr(0, 50), tty); 
 		}
 		catch(...) {
     			
