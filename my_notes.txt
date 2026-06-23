@@ -44,3 +44,5 @@ There is an another bit called eofbit, which is set at the end of the file.
 Generally, ifstream does not set any exception, so, for exceptions, we need to set them manually with filestream.exceptions();
 
 Underlying difference between failbit and badbit is, the task can't be done, but the stream is fine - failbit, the stream itself is getting corrupted because of underlying errors - badbit.
+
+But, in our usecase, when we use getline in while loop and if we enable failbit, everytime, as failbit is set, the while loop executes as long as the condition is becoming false, so, getline is executed only once after setting the failbit, and wanted to prove that the condition is becoming false. But, instead of that normal behaviour, if we set the failbit as exception, it will throw the exception and so, the process details can't be printed.
