@@ -46,3 +46,25 @@ Generally, ifstream does not set any exception, so, for exceptions, we need to s
 Underlying difference between failbit and badbit is, the task can't be done, but the stream is fine - failbit, the stream itself is getting corrupted because of underlying errors - badbit.
 
 But, in our usecase, when we use getline in while loop and if we enable failbit, everytime, as failbit is set, the while loop executes as long as the condition is becoming false, so, getline is executed only once after setting the failbit, and wanted to prove that the condition is becoming false. But, instead of that normal behaviour, if we set the failbit as exception, it will throw the exception and so, the process details can't be printed.
+
+We are going to use stat structure and function from the header file #include <sys/stat.h>. Here, I've learnt that, the types such as struct, enum, union come under tags and int, char, typedef, function etc. come under identifiers. Generally, according to the compiler, there should not be two entities with ambiguous state whether the entity is tag or identifier. If its like that, then, the identifier is provided preference first, and the entity is considered as identifier. Lets consider an example.
+
+struct Person {
+    int age;
+};
+
+void Person() {
+}
+
+Generally, in cpp, we declare structure object without using struct. But, in this case, if we try declaring that, as the compiler prioritizes Person first, it will think that as a function. So, we can't create object Person p, but, we can use Person() and that is always treated as function. So, to declare object to the structure, in this case, we have to use the keyword struct, as struct Person p. This is an another feature of the concept name hiding (Generally it is used to differentiate Global and local scope same name variables). This practice is not generally preferred in modern programming practices, but, this was added to support legacy support. As, it is common in legacy C code, as there, always, structure objects are defined with struct keyword. 
+
+Now, another question, what if we use typedef to create a user defined datatype, like the following code?
+
+typedef struct Person {
+    int age;
+} Person;
+
+void Person() {
+}
+
+In that case, it will create errors, as there is an ambuiguity here. In the before case, there is no error, so, the priority applied by the compiler, here, the priority can't be applied as there are errors. 
