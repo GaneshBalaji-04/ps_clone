@@ -68,3 +68,9 @@ void Person() {
 }
 
 In that case, it will create errors, as there is an ambuiguity here. In the before case, there is no error, so, the priority applied by the compiler, here, the priority can't be applied as there are errors. 
+
+We have to know about major and minor numbers to find the tty device, so that, we can print it..
+
+In linux, everything is a file, even devices like keyboard, mouse etc. are files. So, we need to know which driver manages the appropriate file (device).
+Major number helps us to find the device driver that's responsible for this type of task. 
+Minor number helps us to find which entity needs that driver for the task to be completed. 
