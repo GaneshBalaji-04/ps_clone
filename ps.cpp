@@ -7,6 +7,8 @@
 #include<vector>
 #include<ranges>
 #include<string_view>
+#include<sys/stat.h>
+#include<sys/sysmacros.h>
 
 using namespace std;
 
@@ -73,8 +75,33 @@ int main(){
 				if(tty_value[0] == '(' or tty_value[tty_value.size()-1] == ')') tty_temp = 2;
 				else tty_temp++;
 			}
-			int tty = stoi(tty_value);
-			println("{:<8} {:<20} {:<60} {}", i, name, command.substr(0, 50), tty); 
+			int tty_mid = stoi(tty_value);
+			unsigned int major_num = major(tty_mid);
+			unsigned int minor_num = minor(tty_mid);
+			dev_t tty = makedev(major_num, minor_num);
+			string device;
+			bool sign = false;
+			for(auto entry : fs::recursive_directory_iterator("/dev")){
+				struct stat sb;
+				if(fs::is_character_file(entry.status())) {
+					if(stat(entry.path().c_str(), &sb) == 0) {
+						if(sb.st_rdev == tty){
+							device = entry.path().string();
+							sign = true;
+							break;
+						}
+						if(sign) break;
+					}
+					if(sign) break;
+				}
+				if(sign) break;
+			}
+			if(sign == false){
+				println("{:<8} {:<20} {:<60} ?", i, name, command.substr(0, 50)); 
+			}
+			else{
+				println("{:<8} {:<20} {:<60} {}", i, name, command.substr(0, 50), device); 
+			}
 		}
 		catch(...) {
     			
