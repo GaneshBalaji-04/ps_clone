@@ -76,13 +76,15 @@ int main(){
 				else tty_temp++;
 			}
 			int tty_mid = stoi(tty_value);
-			unsigned int major_num = major(tty_mid);
-			unsigned int minor_num = minor(tty_mid);
-			dev_t tty = makedev(major_num, minor_num);
+			dev_t tty = static_cast<dev_t>(tty_mid);
 			string device;
 			bool sign = false;
 			for(auto entry : fs::recursive_directory_iterator("/dev")){
 				struct stat sb;
+				auto p = entry.path().string();
+				if(p.starts_with("/dev/char") || p.starts_with("/dev/block")){
+					continue;
+				}
 				if(fs::is_character_file(entry.status())) {
 					if(stat(entry.path().c_str(), &sb) == 0) {
 						if(sb.st_rdev == tty){
