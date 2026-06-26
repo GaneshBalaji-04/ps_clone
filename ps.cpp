@@ -47,6 +47,9 @@ int main(){
 		if(p.starts_with("/dev/char") || p.starts_with("/dev/block")){
 			continue;
 		}
+		if(p == "/dev/stdin" || p == "/dev/stdout" || p == "/dev/stderr"){
+			continue;
+		}
 		if(fs::is_character_file(entry.status())){
 			if(stat(entry.path().c_str(), &sb) == 0) {
 				tty_lookup[sb.st_rdev] = entry.path().string();
