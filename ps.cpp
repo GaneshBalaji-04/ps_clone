@@ -5,6 +5,7 @@
 #include<fstream>
 #include<print>
 #include<vector>
+#include<unordered_map>
 #include<ranges>
 #include<string_view>
 #include<sys/stat.h>
@@ -36,6 +37,20 @@ int main(){
 		}
 		if(temporary_path.size() != 0){
 			ordered_pids.insert(stoi(temporary_path));
+		}
+	}
+	unordered_map<dev_t, string> tty_lookup;
+	string dev_path = "/dev";
+	for(const auto &entry: fs::recursive_directory_iterator(dev_path)){
+		struct stat sb;
+		auto p = entry.path().string();
+		if(p.starts_with("/dev/char") || p.starts_with("/dev/block")){
+			continue;
+		}
+		if(fs::is_character_file(entry.status())){
+			if(stat(entry.path().c_str(), &sb) == 0) {
+				tty_lookup[sb.st_rdev] = entry.path().string();
+			}
 		}
 	}
 	println("{:<8} {:<20} {:<60} {}", "PID", "NAME", "COMMAND", "TTY");
@@ -79,31 +94,13 @@ int main(){
 			dev_t tty = static_cast<dev_t>(tty_mid);
 			string device;
 			bool sign = false;
-			for(auto entry : fs::recursive_directory_iterator("/dev")){
-				struct stat sb;
-				auto p = entry.path().string();
-				if(p.starts_with("/dev/char") || p.starts_with("/dev/block")){
-					continue;
-				}
-				if(fs::is_character_file(entry.status())) {
-					if(stat(entry.path().c_str(), &sb) == 0) {
-						if(sb.st_rdev == tty){
-							device = entry.path().string();
-							sign = true;
-							break;
-						}
-						if(sign) break;
-					}
-					if(sign) break;
-				}
-				if(sign) break;
-			}
-			if(sign == false){
-				println("{:<8} {:<20} {:<60} ?", i, name, command.substr(0, 50)); 
+			if(tty_lookup.find(tty) != tty_lookup.end()){
+				device = tty_lookup[tty];
 			}
 			else{
-				println("{:<8} {:<20} {:<60} {}", i, name, command.substr(0, 50), device); 
+				device = "?";
 			}
+			println("{:<8} {:<20} {:<60} {}", i, name, command.substr(0, 50), device); 
 		}
 		catch(...) {
     			
