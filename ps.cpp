@@ -24,7 +24,7 @@ void set_exceptions(ifstream &filestream){
 }
 
 int main(){
-	string path = "/proc";
+	string path = "/proc/";
 	set<int> ordered_pids;
 	for(const auto &entry : fs::directory_iterator(path)){
 		string entry_path = entry.path().filename();
@@ -55,9 +55,9 @@ int main(){
 	}
 	println("{:<8} {:<20} {:<60} {}", "PID", "NAME", "COMMAND", "TTY");
 	for(auto i : ordered_pids){
-		string name_path = "/proc/" + to_string(i) + "/comm";
-		string command_path = "/proc/" + to_string(i) + "/cmdline";
-		string tty_path = "/proc/" + to_string(i) + "/stat";
+		string name_path = path + to_string(i) + "/comm";
+		string command_path = path + to_string(i) + "/cmdline";
+		string tty_path = path + to_string(i) + "/stat";
 		ifstream name_stream(name_path);
 		set_exceptions(name_stream);
 		ifstream cmd_stream(command_path, ios::binary);
