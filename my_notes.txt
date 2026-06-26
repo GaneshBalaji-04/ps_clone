@@ -74,3 +74,15 @@ We have to know about major and minor numbers to find the tty device, so that, w
 In linux, everything is a file, even devices like keyboard, mouse etc. are files. So, we need to know which driver manages the appropriate file (device).
 Major number helps us to find the device driver that's responsible for this type of task. 
 Minor number helps us to find which entity needs that driver for the task to be completed. 
+Always, Major and Minor numbers are unique. 
+
+Here, in the implementation, we would have introduced some conditions for the lookup,
+
+		if(p.starts_with("/dev/char") || p.starts_with("/dev/block") || p.starts_with("/dev/fd")){
+			continue;
+		}
+		if(p == "/dev/stdin" || p == "/dev/stdout" || p == "/dev/stderr"){
+			continue;
+		}
+
+Here, as these directories and files are symlinks, they have the major and minor values of the actual device, so, without these conditions, these values overwrite the actual tty value. The point is, if another tty opens a file, say stdin, the /dev/stdin starts to point that tty, which is what we don't need. So, we are introducing these conditions.
