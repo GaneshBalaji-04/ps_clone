@@ -44,7 +44,7 @@ int main(){
 	for(const auto &entry: fs::recursive_directory_iterator(dev_path)){
 		struct stat sb;
 		auto p = entry.path().string();
-		if(p.starts_with("/dev/char") || p.starts_with("/dev/block")){
+		if(p.starts_with("/dev/char") || p.starts_with("/dev/block") || p.starts_with("/dev/fd")){
 			continue;
 		}
 		if(p == "/dev/stdin" || p == "/dev/stdout" || p == "/dev/stderr"){
