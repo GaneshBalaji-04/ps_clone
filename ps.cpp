@@ -11,9 +11,18 @@
 #include<sys/stat.h>
 #include<sys/sysmacros.h>
 
-using namespace std;
+using std::vector;
+using std::string;
+using std::set;
+using std::to_string;
+using std::getline;
+using std::stoi;
+using std::unordered_map;
+using std::ifstream;
+using std::stoi;
+using std::println;
 
-namespace fs = filesystem;
+namespace fs = std::filesystem;
 
 // This is a function for opening the files in the filestream and to mark exceptions for all.
 // This is done, because, there is no inbuilt function to mark all the filestreams with exceptions.
@@ -63,7 +72,7 @@ int main(){
 		string tty_path = path + to_string(i) + "/stat";
 		ifstream name_stream(name_path);
 		set_exceptions(name_stream);
-		ifstream cmd_stream(command_path, ios::binary);
+		ifstream cmd_stream(command_path, std::ios::binary);
 		set_exceptions(cmd_stream);
 		ifstream tty_stream(tty_path);
 		set_exceptions(tty_stream);
@@ -84,7 +93,7 @@ int main(){
 			}		
 			string whole_stat;
 			getline(tty_stream, whole_stat);
-			auto segments = whole_stat | ranges::views::split(' ');
+			auto segments = whole_stat | std::ranges::views::split(' ');
 			int tty_temp = 1;
 			string tty_value;
 			for(const auto &word : segments){
