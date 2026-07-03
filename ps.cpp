@@ -105,7 +105,6 @@ int main(){
 			int tty_nr = stoi(tty_value);
 			dev_t tty = static_cast<dev_t>(tty_nr);
 			string device;
-			bool sign = false;
 			if(tty_lookup.find(tty) != tty_lookup.end()){
 				device = tty_lookup[tty];
 			}
