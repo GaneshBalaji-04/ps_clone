@@ -102,8 +102,8 @@ int main(){
 				if(tty_value[0] == '(' or tty_value[tty_value.size()-1] == ')') tty_temp = 2;
 				else tty_temp++;
 			}
-			int tty_mid = stoi(tty_value);
-			dev_t tty = static_cast<dev_t>(tty_mid);
+			int tty_nr = stoi(tty_value);
+			dev_t tty = static_cast<dev_t>(tty_nr);
 			string device;
 			bool sign = false;
 			if(tty_lookup.find(tty) != tty_lookup.end()){
